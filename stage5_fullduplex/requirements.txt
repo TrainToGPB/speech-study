@@ -1,0 +1,8 @@
+# Stage 5 — Full-duplex  [잠정: Stage 5 진입 시 확정]
+--extra-index-url https://download.pytorch.org/whl/cu121
+torch
+torchaudio
+moshi                     # Kyutai Moshi (full-duplex). 7B라 8GB엔 q8/데모 병행 권장
+soundfile
+numpy
+# GLM-4-Voice(turn-based 대조군)는 공식 repo/데모로.

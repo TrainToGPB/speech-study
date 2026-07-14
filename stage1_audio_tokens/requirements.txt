@@ -1,0 +1,17 @@
+# Stage 1 — 오디오 표현 & discrete token
+# CUDA(3060 Ti)에서도, CPU에서도 짧은 클립은 잘 돌아갑니다.
+# torch/torchaudio는 CUDA 12.1 휠 기준. CPU만 쓰려면 아래 --index-url 줄을 지우고
+#   uv pip install torch torchaudio 로 설치하세요.
+--extra-index-url https://download.pytorch.org/whl/cu121
+torch
+torchaudio
+# transformers 4.50+는 torch>=2.6에서만 .bin 체크포인트 로드 허용(CVE-2025-32434 가드).
+# HuBERT-base는 safetensors가 없어 .bin만 있으므로, 안정 cu121(torch 2.5)과 쓰려면
+# 가드 이전 버전으로 고정. (torch>=2.6로 올리면 최신 transformers도 가능)
+transformers==4.46.3
+encodec
+librosa
+soundfile
+matplotlib
+numpy
+scikit-learn

@@ -1,0 +1,22 @@
+# 스테이지별 venv — 재생성 가능(uv pip install), 5GB+라 업로드 불가
+.venv/
+**/.venv/
+__pycache__/
+*.pyc
+
+# 공통 샘플 오디오 — download_samples.py로 재생성
+shared/sample_audio/*.wav
+shared/sample_audio/*.flac
+shared/sample_audio/*.mp3
+
+# 모델 가중치 — 대용량, HF 캐시/재다운로드
+*.pt
+*.ckpt
+*.safetensors
+
+# OMC 오케스트레이션 세션 상태 (프로젝트 파일 아님)
+.omc/
+
+.DS_Store
+
+# 참고: outputs/ 는 일부러 포함 — 실습 결과(PNG·WAV·npy)를 GitHub에서 바로 확인

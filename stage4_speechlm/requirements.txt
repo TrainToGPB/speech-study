@@ -1,0 +1,10 @@
+# Stage 4 — Speech LLM  [잠정: Stage 4 진입 시 확정]
+--extra-index-url https://download.pytorch.org/whl/cu121
+torch
+torchaudio
+transformers
+soundfile
+numpy
+# 로컬 실행은 경량 Mini-Omni: 공식 repo 클론 권장
+#   git clone https://github.com/gpt-omni/mini-omni
+# GLM-4-Voice(9B)·Qwen2.5-Omni(7B)는 8GB 초과 → 공식 데모 관찰
