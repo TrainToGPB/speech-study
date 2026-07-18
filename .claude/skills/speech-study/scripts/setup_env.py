@@ -27,6 +27,11 @@ TORCH = {
     "work": ["torch", "torchaudio"],
 }
 
+# venv Python 버전을 고정한다. uv를 그냥 두면 시스템 최신(예: 3.13)을 골라
+# torch cu121 휠(cp39~cp312)과 ABI가 안 맞아 설치가 깨진다. 3.12로 고정(uv가
+# 없으면 자동 다운로드). torch가 새 Python을 지원하면 여기만 올리면 된다.
+PYTHON_VERSION = "3.12"
+
 
 def guess_profile() -> str:
     return "work" if platform.system() == "Darwin" else "home"
@@ -56,11 +61,13 @@ def main() -> int:
     print(f"패키지매니저: {'uv' if use_uv else 'venv+pip'}")
     print(f"{'[dry-run] ' if args.dry_run else ''}셋업 시작\n")
 
-    # 1) venv
+    # 1) venv (Python 버전 고정 — torch 휠 ABI 호환)
     if use_uv:
-        run(["uv", "venv", str(venv)], args.dry_run)
+        run(["uv", "venv", "--python", PYTHON_VERSION, str(venv)], args.dry_run)
     else:
         run([sys.executable, "-m", "venv", str(venv)], args.dry_run)
+        print(f"  (참고: venv+pip 경로는 {sys.executable} 버전을 그대로 씀 — "
+              f"torch 휠 호환({PYTHON_VERSION} 권장)에 유의)")
 
     # 2) torch (프로필별)
     if use_uv:
