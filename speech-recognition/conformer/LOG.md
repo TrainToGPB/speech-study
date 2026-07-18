@@ -5,7 +5,7 @@ paper: conformer
 status: wip
 env_tested: [work]
 created: 2026-07-18
-updated: 2026-07-18
+updated: 2026-07-19
 links:
   paper: https://arxiv.org/abs/2005.08100
   notion: 
@@ -91,3 +91,29 @@ CTC). 예시 오디오는 `hf-internal-testing/librispeech_asr_dummy` 첫 샘플
 - 프레임레이트 **50Hz(20ms)** 는 [[speech-recognition/whisper]] 인코더와 같음. 단 whisper는 log-Mel+conv2층·양방향
   absolute, conformer는 raw+CNN7층·**상대위치** MHSA + conv module로 국소성까지 명시적으로 잡는 게 차이.
 - rel-pos MHSA의 position 항이 content보다 크다는 건 흥미 — 사전학습이 상대거리 편향을 크게 실었다는 뜻.
+
+## 🏛️ 아키텍처 노트 — 왜 이 구조인가
+### macaron(½FFN 샌드위치)의 이론적 근거
+- **"half" = residual 가중치 0.5**(half-step)이지 차원 축소가 아님. 각 FFN은 **풀사이즈 4배 확장(1024→4096→1024)**,
+  그걸 앞뒤로 2개, 각각 `x = x + 0.5·FFN(LN(x))`. (transformer는 풀 FFN 1개를 뒤에만.)
+- 출처 **Macaron-Net** (Lu et al. 2019, *Multi-Particle Dynamic System 관점*). Transformer 블록을 **ODE 수치적분**으로 봄:
+  - self-attention = **diffusion**(위치 간 정보 확산), FFN = **convection**(위치별 독립 이동).
+  - 일반 transformer(attn→FFN) = **Lie-Trotter splitting, 1차 정확도**.
+  - macaron(½FFN→attn→½FFN) = **Strang(대칭) splitting, 2차 정확도**. 0.5는 half-step(Δt/2)에서 나옴.
+- 이점: 같은 ODE를 **더 높은 차수로 정확히 적분** → 깊이를 지나며 표현이 덜 뭉개짐. Conformer는 여기에 conv module도
+  두 half-FFN 사이에 끼움: `½FFN → attn(글로벌) → conv(로컬) → ½FFN → LN`. 이름은 모양(껍질 2 + 필링).
+
+### conv module = "게이팅 붙은 depthwise-separable 1D CNN" (부품별 근거)
+- **LayerNorm(입구)**: residual 브랜치 입력 스케일 안정(pre-LN).
+- **pointwise conv1(1024→2048, =1×1)**: 시간 안 건드리고 채널만 섞는 선형투영. GLU가 반으로 쓰려고 2배 확장.
+- **GLU** `a⊙sigmoid(b)`: b=게이트(0~1), a=내용. 채널 통과율을 데이터가 정함(동적 feature 선택) + `a` 선형경로가
+  **gradient 소실 완화**(Dauphin et al. 2017).
+- **depthwise conv(k31, groups=1024)**: 채널마다 자기 커널 → **시간축 국소 패턴만**(±15 frame≈±300ms). conv module의
+  존재 이유(음소 전이·포먼트 등 국소구조). depthwise인 건 **효율**(full 대비 ~1000배↓ 파라미터, 채널믹싱은 앞뒤
+  pointwise가 함) = depthwise-separable(MobileNet/Xception) 표준 분해.
+- **BatchNorm**: conv 뒤 "CNN스러운" 구간이라 `conv→BN→act` 고전 조합. (스트리밍/가변길이엔 까다로워 GroupNorm/LN으로
+  교체하기도 — HF `use_group_norm` 옵션. 우린 양방향 오프라인이라 BN OK.)
+- **Swish/SiLU** `x·sigmoid(x)`: 매끄럽고 non-monotonic → gradient 흐름 좋음(Ramachandran et al. 2017). FFN에서도 사용.
+- **pointwise conv2(1024→1024)**: 다시 채널 믹싱해 d_model 복원 → residual. `pointwise→depthwise→pointwise`
+  inverted-bottleneck 완성.
+- 한 줄: **attention=글로벌 문맥, conv module=로컬 문맥, speech엔 둘 다 필요** → macaron FFN이 둘을 감쌈.

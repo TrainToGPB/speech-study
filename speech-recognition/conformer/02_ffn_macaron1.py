@@ -38,7 +38,7 @@ def main(ctx: dict | None = None) -> dict:
     print(f"FFN 출력 ff     : {tuple(ff.shape)}  ‖ff‖ 평균 {ff.norm(dim=-1).mean():.2f}")
     print(f"out = ff·0.5+res: {tuple(out.shape)}  ‖·‖ {x.norm(dim=-1).mean():.2f} → {out.norm(dim=-1).mean():.2f}")
     print(f"기여도         : Δ = out-res, ‖Δ‖/‖res‖ 평균 {((out - residual).norm(dim=-1) / residual.norm(dim=-1)).mean():.3f}"
-          f"  (0.5 계수라 attention 앞에서 표현을 '살짝' 밀어줌)")
+          f"  (0.5 계수인데도 ‖Δ‖가 residual의 3배 이상 — attention 앞에서 표현을 크게 전처리. 블록 끝 final LN이 되돌림)")
 
     return ctx
 
