@@ -35,6 +35,8 @@ content-based(Bahdanau) attention decoder, (3) neural vocoder 없이 **Griffin-L
 cd speech-generation/tacotron1
 python <스킬경로>/scripts/setup_env.py home   # 또는 work
 python run.py
+python download_ttao.py                        # 실제 v1(ttaoREtw) 격리 설치 + 체크포인트(.venv-ttao)
+.venv-ttao/bin/python run.py --real            # STEP 6~7: 실제 학습 v1 해부 + alignment 대비
 ```
 
 ## 📊 결과 / 관찰
@@ -44,6 +46,9 @@ python run.py
 - 03 post-net: mel(80) → linear (1,50,513), L1 finite ✅.
 - 04 Griffin-Lim: 실제 오디오(5.86s@16k) magnitude 복원. spectral convergence 10/30/60 iter = `0.135/0.060/0.039`로 수렴. `outputs/original.wav`·`griffinlim.wav`·`griffinlim_spec.png`.
 - 05 사전학습: `tacotron-DCA`(Tacotron1 계열)는 현재 Coqui zoo에 없음(KeyError) → `tacotron2-DDC` 폴백 합성 성공. `outputs/tts_tacotron2-DDC.wav` (4.24s@22k, 실제 음성).
+- 2026-07-19(실제 v1 해부 추가): "차원만 보는 건 의미 없다" → 실제 학습된 Tacotron**1**을 로드해 진짜 동작 확인. Coqui엔 v1이 없어(05는 v2 폴백) 웹에서 `ttaoREtw/Tacotron-pytorch`(MIT, LJSpeech, step 138k) 체크포인트 확보. 텐서 구조가 우리 `modules.py`와 동일(CBHG·BahdanauAttn·GRU decoder residual·post-net CBHG→linear·Griffin-Lim) 확인 → 우리 손조립 코드 구조 검증도 됨.
+- 06 실제 해부: alignment (1,61,55) **peak 0.71·monotonic 0.97~0.98**(대각선), mel (1,~305,80)·linear (1,~305,1025), `real_v1.wav` 3.79s@22050(Griffin-Lim). `outputs/real_{mel,linear,alignment}.png`. (prenet dropout 유지 추론이라 run마다 값 미세 변동.)
+- 07 대비: 같은 문장 alignment — 우리 random **peak 0.019**(diffuse, ≈1/T_enc) vs 학습됨 **peak 0.71**(대각선). "같은 content-based attention, 학습 전 vs 후"가 `outputs/alignment_compare.png`에 한눈에.
 
 ## 🧱 막힌 점 / TODO
 - `torchaudio.save`는 2.11에서 torchcodec을 요구 → `soundfile`로 저장(`common.save_wav`).
@@ -51,6 +56,9 @@ python run.py
 - Tacotron1(v1) 사전학습 체크포인트가 Coqui zoo에 없어 v2(`tacotron2-DDC`)로 대체. 진짜 v1 가중치 필요하면 keithito(구 TF)/다른 소스 탐색.
 - home(8GB CUDA)에서 05 미검증(work만). 01~04는 환경 무관.
 - (선택) 01~03에 toy alignment overfit을 더해 attention이 monotonic으로 학습되는 걸 눈으로 보는 스텝 추가 여지.
+- 실제 v1 로드용 `ttao_ref/` vendoring(MIT, commit `6b0f615`): 추론 파일만 복사(dataset/solver 제외), `utils.py` 2곳 하드 API 패치(`np.complex`→`np.complex128`, `librosa.filters.mel` keyword). 상세 `ttao_ref/PROVENANCE.md`.
+- `.venv-ttao` 설치: uv가 옛 `numba`(0.53, py<3.10 전용)를 집어 `llvmlite` 소스빌드 실패 → `numba>=0.60`+`numpy<2.1` 핀으로 프리빌트 휠 유도(해결). 최종 torch 2.13·librosa 0.11·numba 0.66·numpy 2.0.2.
+- 이 체크포인트는 v1 구조지만 계층 이름·차원(r=5·linear 1025·vocab 250)이 우리 모듈과 달라 `load_state_dict` 직접 불가 → vendored 코드로 실행(우리 `modules.py` 이식은 fragile 복제라 비채택).
 
 ## 📝 메모
 - 주의: `torchaudio`/HF 공식 파이프라인엔 Tacotron**2**만 있고 Tacotron1은 없음 → from-scratch

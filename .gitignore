@@ -3,6 +3,8 @@
 **/.venv/
 .venv-tts/
 **/.venv-tts/
+.venv-ttao/
+**/.venv-ttao/
 
 # 대용량 자산·결과물 (download.py로 복원)
 outputs/
