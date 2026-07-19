@@ -1,6 +1,8 @@
 # 실험 venv (실험별 분리)
 .venv/
 **/.venv/
+.venv-tts/
+**/.venv-tts/
 
 # 대용량 자산·결과물 (download.py로 복원)
 outputs/

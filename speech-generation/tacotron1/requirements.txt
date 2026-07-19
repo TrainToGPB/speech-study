@@ -1,0 +1,8 @@
+# torch/torchaudio는 setup_env.py가 환경(home=CUDA / work=MPS)에 맞게 설치합니다.
+# 여기엔 넣지 마세요. 나머지 의존성만 나열하세요.
+matplotlib   # 단계별 시각화 → outputs/*.png
+soundfile    # 오디오 로드 + wav 저장(torchaudio.save는 2.11에서 torchcodec 필요 → soundfile 사용)
+datasets     # 예시 오디오(librispeech dummy) 로드
+numpy
+# 05 사전학습 합성용 coqui-tts는 torch 핀 충돌 위험이 있어 requirements가 아니라
+# download.py로 분리 설치합니다:  python download.py
