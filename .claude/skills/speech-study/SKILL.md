@@ -21,19 +21,21 @@ Speech AI 논문/아이디어를 hands-on으로 실습하는 저장소를 일관
 
 ```
 speech-study/
-├── INDEX.md                 # 실험 레지스트리 (build_index.py가 자동 생성)
-├── shared/env.py            # device 자동감지 헬퍼 (cuda→mps→cpu)
-├── <topic>/<paper-or-idea>/ # 실험 단위
-│   ├── LOG.md               # 프론트매터 + 본문 (INDEX의 단일 소스)
-│   ├── requirements.txt     # torch 제외한 의존성 (setup이 torch 설치)
-│   ├── download.py          # 대용량 자산 다운로드 (자산 자체는 git 제외)
-│   ├── run.py               # 실험 코드
-│   ├── .venv/               # 실험 전용 venv (git 제외)
-│   └── outputs/             # 결과물·가중치·오디오 (git 제외)
-└── sandbox/<idea>/          # 주제가 애매한 순수 아이디어 실험
+├── INDEX.md                       # 실험 레지스트리 (build_index.py가 자동 생성)
+├── shared/env.py                  # device 자동감지 헬퍼 (cuda→mps→cpu)
+├── study/                         # 논문·메커니즘 해부
+│   └── <topic>/<paper-or-idea>/   # 실험 단위
+│       ├── LOG.md                 # 프론트매터 + 본문 (INDEX의 단일 소스)
+│       ├── requirements.txt       # torch 제외 의존성
+│       ├── download.py            # 대용량 자산 다운로드 (자산은 git 제외)
+│       ├── run.py                 # 실험 코드
+│       ├── .venv/  · outputs/     # git 제외
+└── train/                         # 학습·전처리 실무 실습
+    └── <topic>/<name>/            # 같은 골격
 ```
 
 - **조직 단위 = 실험 폴더**(대개 논문 1개), 그 위를 **주제 폴더**로 묶는다.
+- **최상위 구분**: `study/`(해부) · `train/`(학습 실무). 경로는 항상 `<section>/<topic>/<name>` 3단계.
 - **논문 폴더명**은 짧은 kebab-case(`encodec`, `hubert`, `moshi`) — 노션 논문 리뷰 허브와 1:1.
 - **아이디어 실험**은 관련 주제 안에 `_idea-<name>`, 주제가 애매하면 `sandbox/`.
 - **venv는 실험마다 분리**해서 의존성 충돌(특히 `transformers` 핀)을 격리한다.
@@ -63,13 +65,12 @@ HuBERT 등 일부 모델은 `.bin`만 있기 때문. 코드에서 device는 항�
 트리거: "새 실험", "encodec 폴더 만들어줘", "논문 실습 시작".
 
 ```bash
-python .claude/skills/speech-study/scripts/new_experiment.py <topic>/<name> \
+python .claude/skills/speech-study/scripts/new_experiment.py <section>/<topic>/<name> \
   --title "<사람이 읽는 제목>" \
   [--idea] [--paper-link <url>] [--notion-link <url>]
 ```
 
-- `<topic>/<name>` 예: `audio-tokenization/encodec`. 아이디어면 `--idea`를 붙이고
-  이름은 `_idea-...` 또는 `sandbox/<name>` 사용.
+- `<section>/<topic>/<name>` 예: `train/recognition/whisper-finetune-ko`, `study/audio-tokenization/encodec`.
 - 폴더와 `LOG.md`·`requirements.txt`·`download.py`·`run.py`·`outputs/`를 만들고 INDEX를 갱신한다.
 - 만든 뒤 사용자에게 다음 할 일을 알려준다: LOG.md 목표 채우기 → `setup` → 코드 작성.
 
@@ -80,7 +81,7 @@ python .claude/skills/speech-study/scripts/new_experiment.py <topic>/<name> \
 **반드시 대상 실험 폴더 안(cwd)에서 실행**한다. venv가 실험별로 분리되기 때문.
 
 ```bash
-cd <topic>/<name>
+cd <section>/<topic>/<name>
 python <스킬경로>/scripts/setup_env.py [home|work]
 ```
 

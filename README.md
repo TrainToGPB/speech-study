@@ -9,7 +9,8 @@ LLM 엔지니어가 오디오 기초 → speech understanding/generation → ful
 ## 구조
 
 ```
-<topic>/<paper-or-idea>/   # 실험 단위 (예: audio-tokenization/encodec)
+study/<topic>/<paper-or-idea>/   # 논문·메커니즘 해부 (예: recognition/whisper)
+train/<topic>/<name>/            # 학습·전처리 실무 실습 (예: recognition/whisper-finetune-ko)
 ├── LOG.md                 # 목표·실행법·결과·막힌 점 (INDEX의 단일 소스)
 ├── requirements.txt       # torch 제외 의존성
 ├── download.py            # 대용량 자산 다운로드 (자산 자체는 git 제외)
@@ -18,7 +19,6 @@ LLM 엔지니어가 오디오 기초 → speech understanding/generation → ful
 └── outputs/               # 결과물·가중치 (git 제외)
 
 shared/env.py              # device 자동감지 (cuda→mps→cpu)
-sandbox/<idea>/            # 주제가 애매한 순수 아이디어 실험
 ```
 
 - **venv는 실험마다 분리**해 의존성 충돌을 격리. **HF 캐시는 공유**되어 모델은 한 번만 받는다.
@@ -48,11 +48,11 @@ sandbox/<idea>/            # 주제가 애매한 순수 아이디어 실험
 ```bash
 # 새 실험
 python .claude/skills/speech-study/scripts/new_experiment.py \
-    audio-tokenization/encodec --title "EnCodec 실습" --paper-link <url>
+    train/recognition/whisper-finetune-ko --title "Whisper 한국어 파인튜닝"
 
 # 환경 셋업 (실험 폴더 안에서)
-cd audio-tokenization/encodec
-python ../../.claude/skills/speech-study/scripts/setup_env.py home
+cd train/recognition/whisper-finetune-ko
+python ../../../.claude/skills/speech-study/scripts/setup_env.py work
 
 # 인덱스 갱신
 python .claude/skills/speech-study/scripts/build_index.py
