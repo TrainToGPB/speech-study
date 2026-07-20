@@ -1,0 +1,7 @@
+# torch/torchaudio는 setup_env.py가 환경(work=MPS)에 맞게 설치합니다.
+transformers==4.46.3
+datasets>=3.0,<4      # Zeroth FLAC를 soundfile로 디코딩(torchcodec 회피). datasets 4는 torchcodec 요구.
+evaluate
+jiwer                 # CER/WER 백엔드
+accelerate            # HF Trainer 필수
+soundfile             # FLAC 디코딩
