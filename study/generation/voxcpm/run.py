@@ -1,55 +1,37 @@
-"""VoxCPM-0.5B 최소 TTS 추론 (tokenizer-free TTS, arxiv 2509.24650).
+"""VoxCPM-0.5B 동작을 예시 한 쌍(참조 오디오 + 목표 문장)으로 STEP 1~6 순서 실행.
 
-텍스트 한 문장을 음성으로 합성해 outputs/에 저장한다. 두 환경 모두에서 돌게
-device는 shared/env.py의 get_device()로 얻는다(work=mps / home=cuda).
+각 단계는 개별 실행도 가능(python 01_audio_vae.py ...). 여기서는 컨텍스트(모델·
+참조 오디오·조건)를 한 번만 만들어 순서대로 공유하며 돈다. 결과 그림/오디오는 outputs/.
 
-    python download.py   # 최초 1회 가중치 받기
-    python run.py
+STEP 1 Audio VAE(연속 latent) → 2 text BPE+조건조립 → 3 LocEnc+TSLM+FSQ skeleton
+→ 4 RALM 잔차+h_final → 5 LocDiT diffusion(1 patch) → 6 AR 루프+Stop→합성.
+
+tokenizer-free TTS의 전 파이프라인을 실제 가중치로 한 번에 따라간다.
+(semantic–acoustic 분리 증거인 t-SNE는 별도: python viz_decoupling_tsne.py)
 """
-import os
-import pathlib
-import sys
+import importlib
 
-# MPS에서 아직 미지원인 연산(diffusion LocDiT 일부)이 있으면 CPU로 폴백.
-os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
+from common import build_context, rule
 
-# 레포 루트를 경로에 추가해 shared/env.py를 임포트
-sys.path.append(str(pathlib.Path(__file__).resolve().parents[3]))
-from shared.env import get_device  # noqa: E402
-
-import soundfile as sf  # noqa: E402
-from voxcpm import VoxCPM  # noqa: E402
-
-MODEL_ID = "openbmb/VoxCPM-0.5B"
-TEXT = "VoxCPM is a tokenizer-free text-to-speech model that generates highly expressive speech."
-OUT = pathlib.Path(__file__).parent / "outputs" / "voxcpm_0.5b_demo.wav"
+STEPS = [
+    "01_audio_vae",
+    "02_text_and_condition",
+    "03_tslm_fsq",
+    "04_ralm_residual",
+    "05_locdit_diffusion",
+    "06_generate_and_stop",
+]
 
 
 def main() -> None:
-    device = get_device()
-    print(f"device: {device}")
-
-    # load_denoiser=False: 화자 복제용 참조오디오 향상기(zipenhancer)라 데모엔 불필요.
-    # optimize=False: MPS 첫 실행 안정성 우선(컴파일/그래프 최적화 끄기).
-    model = VoxCPM.from_pretrained(
-        MODEL_ID, load_denoiser=False, optimize=False, device=device
-    )
-
-    # cfg_value: LM→LocDiT 가이던스 세기, inference_timesteps: LocDiT 확산 스텝.
-    # denoise=False (denoiser 미로딩), normalize=True: 내장 텍스트 정규화(wetext).
-    wav = model.generate(
-        text=TEXT,
-        cfg_value=2.0,
-        inference_timesteps=10,
-        normalize=True,
-        denoise=False,
-    )
-
-    sr = getattr(getattr(model, "tts_model", None), "sample_rate", 16000)
-    OUT.parent.mkdir(parents=True, exist_ok=True)
-    sf.write(str(OUT), wav, sr)
-    dur = len(wav) / sr
-    print(f"saved: {OUT}  ({dur:.2f}s @ {sr}Hz, {len(wav)} samples)")
+    rule("VoxCPM-0.5B — tokenizer-free TTS step-by-step (참조 1개 + 목표 문장 1개)")
+    ctx = build_context()
+    print(f"device={ctx['device']} | dtype={ctx['dtype']} | model={ctx['tts'].__class__.__name__}")
+    print(f"참조 오디오={len(ctx['ref_audio']) / ctx['sample_rate']:.2f}s | 목표 문장 {ctx['target_text']!r}")
+    for name in STEPS:
+        mod = importlib.import_module(name)
+        ctx = mod.main(ctx)
+    rule("완료 — outputs/ 의 png·wav와 위 로그로 tokenizer-free TTS 파이프라인을 순서대로 확인하세요")
 
 
 if __name__ == "__main__":
