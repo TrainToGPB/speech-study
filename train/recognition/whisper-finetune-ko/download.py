@@ -1,12 +1,29 @@
-"""대용량 자산(가중치·데이터셋·샘플 오디오) 다운로드 스크립트.
+"""whisper-base 가중치 + Zeroth-Korean subset + CER metric 을 HF 캐시에 미리 받는다.
 
-실제 파일은 .gitignore로 git에서 제외됩니다. 여기엔 URL/로더만 남기세요.
-그러면 어느 머신에서든 이 스크립트만 돌려 자산을 복원할 수 있습니다.
+실제 파일은 ~/.cache/huggingface(공유 캐시)에 저장된다.
 """
-# 예시:
-# from huggingface_hub import hf_hub_download
-# hf_hub_download(repo_id="facebook/encodec_24khz", filename="pytorch_model.bin",
-#                 local_dir="outputs/weights")
+from common import DATASET_ID, MODEL_ID, load_cer
+
+
+def main() -> None:
+    print(f"1) 모델 캐시: {MODEL_ID}")
+    from transformers import WhisperForConditionalGeneration, WhisperProcessor
+
+    WhisperProcessor.from_pretrained(MODEL_ID)
+    WhisperForConditionalGeneration.from_pretrained(MODEL_ID)
+
+    print(f"2) 데이터 캐시: {DATASET_ID} (train/test)")
+    from datasets import load_dataset
+
+    dtr = load_dataset(DATASET_ID, split="train")
+    dte = load_dataset(DATASET_ID, split="test")
+    print(f"   train {len(dtr)} · test {len(dte)} · columns {dtr.column_names}")
+    print(f"   예시 전사: {dte[0].get('text', dte[0])!r}"[:100])
+
+    print("3) CER metric 캐시")
+    load_cer()
+    print("완료. 캐시 위치: ~/.cache/huggingface")
+
 
 if __name__ == "__main__":
-    print("다운로드할 자산을 이 스크립트에 추가하세요.")
+    main()
