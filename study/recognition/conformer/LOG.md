@@ -1,6 +1,6 @@
 ---
 title: Conformer 블록 구조: macaron FFN + MHSA + conv module 순서대로
-topic: speech-recognition
+topic: recognition
 paper: conformer
 status: wip
 env_tested: [work]
@@ -21,7 +21,7 @@ Conformer 블록이 오디오 feature 시퀀스를 어떻게 처리하는지, �
 
 ## ⚙️ 실행 방법
 ```bash
-cd speech-recognition/conformer
+cd study/recognition/conformer
 python <스킬경로>/scripts/setup_env.py work   # 또는 home
 python download.py     # (선택) 오디오·모델(~600M) 미리 캐시
 python run.py          # STEP 1~6 쭉 실행 → outputs/*.png
@@ -87,8 +87,8 @@ CTC). 예시 오디오는 `hf-internal-testing/librispeech_asr_dummy` 첫 샘플
 - 논문: [Conformer: Convolution-augmented Transformer for Speech Recognition](https://arxiv.org/abs/2005.08100)
 - 블록 순서: `x = ffn1(LN)·0.5+x → dropout(self_attn(LN,rel_pos))+x → conv_module(x)+x → ffn2(LN)·0.5+x → final_LN`.
   **macaron = ½FFN 두 개가 attention을 감쌈**. residual은 FFN만 ×0.5.
-- front-end(CNN 7층·49~50Hz)는 [[speech-representation/wav2vec2]] STEP 1과 동일 계보. 같은 wav2vec2 feature encoder.
-- 프레임레이트 **50Hz(20ms)** 는 [[speech-recognition/whisper]] 인코더와 같음. 단 whisper는 log-Mel+conv2층·양방향
+- front-end(CNN 7층·49~50Hz)는 [[study/representation/wav2vec2]] STEP 1과 동일 계보. 같은 wav2vec2 feature encoder.
+- 프레임레이트 **50Hz(20ms)** 는 [[study/recognition/whisper]] 인코더와 같음. 단 whisper는 log-Mel+conv2층·양방향
   absolute, conformer는 raw+CNN7층·**상대위치** MHSA + conv module로 국소성까지 명시적으로 잡는 게 차이.
 - rel-pos MHSA의 position 항이 content보다 크다는 건 흥미 — 사전학습이 상대거리 편향을 크게 실었다는 뜻.
 

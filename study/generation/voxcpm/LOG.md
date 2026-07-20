@@ -1,6 +1,6 @@
 ---
 title: VoxCPM: tokenizer-free TTS
-topic: speech-generation
+topic: generation
 paper: voxcpm
 status: wip
 env_tested: [work]
@@ -18,7 +18,7 @@ links:
 
 ## ⚙️ 실행 방법
 ```bash
-cd speech-generation/voxcpm
+cd study/generation/voxcpm
 python <스킬경로>/scripts/setup_env.py work   # 최초 1회 (torch/torchaudio + requirements)
 python download.py                            # 최초 1회 VoxCPM-0.5B 가중치(HF 캐시)
 python run.py                                 # outputs/voxcpm_0.5b_demo.wav 생성
@@ -40,4 +40,4 @@ python run.py                                 # outputs/voxcpm_0.5b_demo.wav 생
 ## 📝 메모
 - 노션 정리(방법론 중심): [VoxCPM 자료 라이브러리 페이지](https://app.notion.com/p/39f74b55ec7c81f5bea6cc0fb6cb2980) — S3 실습 메인
 - tokenizer-free TTS: `TSLM`+`FSQ` semantic 골격 + `RALM` acoustic 잔차 → `LocDiT` diffusion. MiniCPM-4-0.5B backbone
-- 관련 실험: [[speech-generation/tacotron1]] (attention 기반 고전 TTS 대비)
+- 관련 실험: [[study/generation/tacotron1]] (attention 기반 고전 TTS 대비)

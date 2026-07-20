@@ -6,7 +6,7 @@ conformer 인코더 앞단은 wav2vec2와 동일하다:
 그리고 encoder가 rel-pos 임베딩 (1, 2T-1, 1024)을 한 번 만들어 모든 층 self_attn에 넘긴다.
 (conformer 인코더는 wav2vec2와 달리 pos_conv를 쓰지 않고 위치정보는 전적으로 상대위치로 준다.)
 
-front-end 상세는 [[speech-representation/wav2vec2]]의 STEP 1(feature encoder)에서 깊게 다뤘다.
+front-end 상세는 [[study/representation/wav2vec2]]의 STEP 1(feature encoder)에서 깊게 다뤘다.
 여기선 conformer 블록 입력의 shape·성질만 확인하고 STEP 2로 넘어간다. 실제 forward는
 build_context에서 1회 수행돼 ctx로 공유된다.
 """

@@ -1,6 +1,6 @@
 ---
 title: Whisper 인코더 동작 메커니즘 순서대로 파악
-topic: speech-recognition
+topic: recognition
 paper: whisper
 status: wip
 env_tested: [work]
@@ -20,7 +20,7 @@ log-Mel → conv stem(다운샘플) → positional → encoder blocks(self-attn)
 
 ## ⚙️ 실행 방법
 ```bash
-cd speech-recognition/whisper
+cd study/recognition/whisper
 python <스킬경로>/scripts/setup_env.py work   # 또는 home
 python download.py     # (선택) 오디오·모델 미리 캐시
 python run.py          # STEP 1~6 쭉 실행 → outputs/*.png
@@ -90,6 +90,6 @@ Mac/MPS에서 가볍다. 예시 오디오는 `hf-internal-testing/librispeech_as
 
 ## 📝 메모
 - 논문: [Robust Speech Recognition via Large-Scale Weak Supervision](https://arxiv.org/abs/2212.04356)
-- 인코더 프레임레이트 **50Hz(20ms)** 는 [[speech-representation/wav2vec2]]의 feature encoder 49Hz와
+- 인코더 프레임레이트 **50Hz(20ms)** 는 [[study/representation/wav2vec2]]의 feature encoder 49Hz와
   우연히 비슷. 단 whisper는 **log-Mel + conv 2층**, wav2vec2는 **raw waveform + CNN 7층**으로 도달 경로가 다름.
 - 인코더는 causal mask가 없어 30초 전체를 양방향으로 본다(오프라인 전사). 디코더만 causal.

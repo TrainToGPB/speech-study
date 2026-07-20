@@ -1,6 +1,6 @@
 ---
 title: Tacotron: end-to-end seq2seq TTS — 텍스트 → mel → Griffin-Lim 파형
-topic: speech-generation
+topic: generation
 paper: tacotron1
 status: wip
 env_tested: [work]
@@ -32,7 +32,7 @@ content-based(Bahdanau) attention decoder, (3) neural vocoder 없이 **Griffin-L
 
 ## ⚙️ 실행 방법
 ```bash
-cd speech-generation/tacotron1
+cd study/generation/tacotron1
 python <스킬경로>/scripts/setup_env.py home   # 또는 work
 python run.py
 python download_ttao.py                        # 실제 v1(ttaoREtw) 격리 설치 + 체크포인트(.venv-ttao)
@@ -70,4 +70,4 @@ python download_ttao.py                        # 실제 v1(ttaoREtw) 격리 설�
   리샘플 안 함 — GL 시연엔 무관). random-init 모듈이라 01~03 forward는 acoustic 의미가 없어 shape·불변식만 검증.
 - 05 Coqui 분리: `coqui-tts`가 torch 핀을 끌어 core venv를 깨뜨릴 수 있어 `requirements.txt`가 아니라
   `download.py`로 분리 설치. `tacotron-DCA` 미존재 시 `tacotron2-DDC` 폴백(v2지만 seq2seq+attention 동일), 사용 모델·vocoder를 로그.
-- 관련: [[speech-representation/wav2vec2]] (표현학습) ↔ 이건 생성(TTS). paper: arXiv 1703.10135.
+- 관련: [[study/representation/wav2vec2]] (표현학습) ↔ 이건 생성(TTS). paper: arXiv 1703.10135.

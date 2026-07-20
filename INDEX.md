@@ -7,8 +7,8 @@
 
 | 구분 | 주제 | 실험 | 유형 | 상태 | 검증환경 | 갱신일 |
 |------|------|------|------|------|----------|--------|
-| study | speech-generation | [tacotron1](study/generation/tacotron1/LOG.md) | 📄 논문 | 🚧 wip | work | 2026-07-19 |
-| study | speech-generation | [voxcpm](study/generation/voxcpm/LOG.md) | 📄 논문 | 🚧 wip | work | 2026-07-19 |
-| study | speech-recognition | [conformer](study/recognition/conformer/LOG.md) | 📄 논문 | 🚧 wip | work | 2026-07-19 |
-| study | speech-recognition | [whisper](study/recognition/whisper/LOG.md) | 📄 논문 | 🚧 wip | work | 2026-07-18 |
-| study | speech-representation | [wav2vec2](study/representation/wav2vec2/LOG.md) | 📄 논문 | 🚧 wip | home | 2026-07-18 |
+| study | generation | [tacotron1](study/generation/tacotron1/LOG.md) | 📄 논문 | 🚧 wip | work | 2026-07-19 |
+| study | generation | [voxcpm](study/generation/voxcpm/LOG.md) | 📄 논문 | 🚧 wip | work | 2026-07-19 |
+| study | recognition | [conformer](study/recognition/conformer/LOG.md) | 📄 논문 | 🚧 wip | work | 2026-07-19 |
+| study | recognition | [whisper](study/recognition/whisper/LOG.md) | 📄 논문 | 🚧 wip | work | 2026-07-18 |
+| study | representation | [wav2vec2](study/representation/wav2vec2/LOG.md) | 📄 논문 | 🚧 wip | home | 2026-07-18 |

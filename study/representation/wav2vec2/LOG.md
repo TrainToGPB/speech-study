@@ -1,6 +1,6 @@
 ---
 title: wav2vec 2.0 — 메커니즘 step-by-step
-topic: speech-representation
+topic: representation
 paper: wav2vec2
 status: wip
 env_tested: [home]
@@ -19,7 +19,7 @@ network → quantizer → contrastive → diversity → 전체 objective. 각 �
 
 ## ⚙️ 실행 방법
 ```bash
-cd speech-representation/wav2vec2
+cd study/representation/wav2vec2
 python <스킬경로>/scripts/setup_env.py home   # 또는 work
 python download.py     # (선택) 오디오·모델 미리 캐시
 python run.py          # STEP 1~7 쭉 실행 → outputs/*.png
@@ -66,4 +66,4 @@ python run.py          # STEP 1~7 쭉 실행 → outputs/*.png
 
 ## 📝 메모
 - 노션 정리: [wav2vec 2.0](https://app.notion.com/p/39d74b55ec7c81eb81f1fed78d055a74)
-- 같은 계보 continuous SSL feature → discrete unit: 다음은 [[speech-representation/hubert]] (예정)
+- 같은 계보 continuous SSL feature → discrete unit: 다음은 [[study/representation/hubert]] (예정)
