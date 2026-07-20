@@ -14,7 +14,7 @@ import sys
 os.environ.setdefault("PYTORCH_ENABLE_MPS_FALLBACK", "1")
 
 # 레포 루트를 경로에 추가해 shared/env.py를 임포트
-sys.path.append(str(pathlib.Path(__file__).resolve().parents[2]))
+sys.path.append(str(pathlib.Path(__file__).resolve().parents[3]))
 from shared.env import get_device  # noqa: E402
 
 import soundfile as sf  # noqa: E402

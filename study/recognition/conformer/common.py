@@ -23,7 +23,7 @@ import sys
 import numpy as np
 
 # 레포 루트를 경로에 추가해 shared/env.py를 임포트
-sys.path.append(str(pathlib.Path(__file__).resolve().parents[2]))
+sys.path.append(str(pathlib.Path(__file__).resolve().parents[3]))
 from shared.env import get_device  # noqa: E402
 
 MODEL_ID = "facebook/wav2vec2-conformer-rel-pos-large-960h-ft"  # rel-pos · CTC(960h finetune)

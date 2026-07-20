@@ -4,7 +4,7 @@
 device를 자동 감지한다. 실험 코드에서는 항상 이 함수를 통해 device를 얻는다.
 
     import pathlib, sys
-    sys.path.append(str(pathlib.Path(__file__).resolve().parents[2]))
+    sys.path.append(str(pathlib.Path(__file__).resolve().parents[3]))
     from shared.env import get_device
     device = get_device()
 """

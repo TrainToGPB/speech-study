@@ -17,7 +17,7 @@ import sys
 import numpy as np
 
 # 레포 루트를 경로에 추가해 shared/env.py를 임포트
-sys.path.append(str(pathlib.Path(__file__).resolve().parents[2]))
+sys.path.append(str(pathlib.Path(__file__).resolve().parents[3]))
 from shared.env import get_device  # noqa: E402
 
 MODEL_ID = "openai/whisper-base"  # enc 6층 · d_model 512 · head 8 · mel 80
