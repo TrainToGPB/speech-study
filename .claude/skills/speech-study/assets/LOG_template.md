@@ -16,7 +16,7 @@ links:
 
 ## ⚙️ 실행 방법
 ```bash
-cd {{TOPIC}}/{{NAME}}
+cd {{PATH}}
 python <스킬경로>/scripts/setup_env.py home   # 또는 work
 python run.py
 ```

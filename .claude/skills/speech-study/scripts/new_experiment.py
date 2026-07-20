@@ -56,7 +56,7 @@ import pathlib
 import sys
 
 # 레포 루트를 경로에 추가해 shared/env.py를 임포트
-sys.path.append(str(pathlib.Path(__file__).resolve().parents[2]))
+sys.path.append(str(pathlib.Path(__file__).resolve().parents[3]))
 from shared.env import get_device
 
 device = get_device()
@@ -68,7 +68,7 @@ print(f"device: {device}")
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("path", help="<topic>/<name> 형식")
+    ap.add_argument("path", help="<section>/<topic>/<name> 형식")
     ap.add_argument("--title", default=None)
     ap.add_argument("--idea", action="store_true", help="논문이 아닌 아이디어 실험")
     ap.add_argument("--paper-link", default="")
@@ -76,13 +76,14 @@ def main() -> int:
     args = ap.parse_args()
 
     parts = args.path.strip("/").split("/")
-    if len(parts) != 2:
-        print("경로는 <topic>/<name> 두 단계여야 합니다.", file=sys.stderr)
+    if len(parts) != 3:
+        print("경로는 <section>/<topic>/<name> 세 단계여야 합니다 "
+              "(예: train/recognition/whisper-finetune-ko).", file=sys.stderr)
         return 1
-    topic, name = parts
+    section, topic, name = parts
 
     root = repo_root()
-    exp = root / topic / name
+    exp = root / section / topic / name
     if exp.exists():
         print(f"이미 존재합니다: {exp.relative_to(root)}", file=sys.stderr)
         return 1
@@ -94,6 +95,8 @@ def main() -> int:
     log = (
         TEMPLATE.read_text(encoding="utf-8")
         .replace("{{TITLE}}", title)
+        .replace("{{PATH}}", f"{section}/{topic}/{name}")
+        .replace("{{SECTION}}", section)
         .replace("{{TOPIC}}", topic)
         .replace("{{NAME}}", name)
         .replace("{{KIND_LINE}}", kind_line)
@@ -117,8 +120,8 @@ def main() -> int:
     subprocess.run([sys.executable, str(SKILL_DIR / "scripts" / "build_index.py")], check=False)
 
     print("\n다음 단계:")
-    print(f"  1. {topic}/{name}/LOG.md 의 🎯 목표를 채우기")
-    print(f"  2. cd {topic}/{name} && python {SKILL_DIR}/scripts/setup_env.py home  # 또는 work")
+    print(f"  1. {section}/{topic}/{name}/LOG.md 의 🎯 목표를 채우기")
+    print(f"  2. cd {section}/{topic}/{name} && python {SKILL_DIR}/scripts/setup_env.py home  # 또는 work")
     print("  3. run.py 에 실험 코드 작성")
     return 0
 
