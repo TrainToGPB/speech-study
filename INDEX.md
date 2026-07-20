@@ -8,7 +8,7 @@
 | 주제 | 실험 | 유형 | 상태 | 검증환경 | 갱신일 |
 |------|------|------|------|----------|--------|
 | speech-generation | [tacotron1](speech-generation/tacotron1/LOG.md) | 📄 논문 | 🚧 wip | work | 2026-07-19 |
-| speech-generation | [voxcpm](speech-generation/voxcpm/LOG.md) | 📄 논문 | 🌱 planned | work | 2026-07-19 |
+| speech-generation | [voxcpm](speech-generation/voxcpm/LOG.md) | 📄 논문 | 🚧 wip | work | 2026-07-19 |
 | speech-recognition | [conformer](speech-recognition/conformer/LOG.md) | 📄 논문 | 🚧 wip | work | 2026-07-19 |
 | speech-recognition | [whisper](speech-recognition/whisper/LOG.md) | 📄 논문 | 🚧 wip | work | 2026-07-18 |
 | speech-representation | [wav2vec2](speech-representation/wav2vec2/LOG.md) | 📄 논문 | 🚧 wip | home | 2026-07-18 |
