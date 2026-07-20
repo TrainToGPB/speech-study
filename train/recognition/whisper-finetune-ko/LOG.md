@@ -2,8 +2,8 @@
 title: Whisper 한국어 미니 파인튜닝 (CER 전/후, M5·MPS)
 topic: recognition
 idea: whisper-finetune-ko
-status: planned
-env_tested: []
+status: wip
+env_tested: [work]
 created: 2026-07-20
 updated: 2026-07-20
 links:
@@ -32,7 +32,14 @@ python 04_evaluate.py    # 파인튜닝 후 CER + 전/후 비교
 num_workers 0)은 `common.py`에 모음.
 
 ## 📊 결과 / 관찰
-<!-- YYYY-MM-DD: 무엇이 나왔나, 수치·인상 -->
+2026-07-20 · work(M5, MPS)에서 01~04 완주. whisper-base + Zeroth-Korean
+train 1000·eval 100, max_steps 200, fp32.
+- baseline CER = 0.1769 → fine-tuned CER = 0.1387 (Δ +0.0382, 좋아짐).
+- 예시 triple에서 숫자 표기가 눈에 띄게 개선됨: base는 "3월"·"2018년"처럼 아라비아
+  숫자로 뽑는 반면 ft는 Zeroth 전사 관례대로 "삼 월"·"이천 십 팔년"으로 한글 숫자
+  표기를 학습해 정답과 더 가깝게 맞춤. 문장 끝 마침표도 base는 붙이고 ft는 (정답처럼)
+  생략하는 방향으로 스타일이 이동.
+- 학습 시간 ~6.5분 (batch 8, MPS), loss 1.07 → 0.28 (train_loss 0.466).
 
 ## 🧱 막힌 점 / TODO
 <!-- 에러, 8GB 한계, 다음에 할 것 -->

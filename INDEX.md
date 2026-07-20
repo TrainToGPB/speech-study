@@ -12,4 +12,4 @@
 | study | recognition | [conformer](study/recognition/conformer/LOG.md) | 📄 논문 | 🚧 wip | work | 2026-07-19 |
 | study | recognition | [whisper](study/recognition/whisper/LOG.md) | 📄 논문 | 🚧 wip | work | 2026-07-18 |
 | study | representation | [wav2vec2](study/representation/wav2vec2/LOG.md) | 📄 논문 | 🚧 wip | home | 2026-07-18 |
-| train | recognition | [whisper-finetune-ko](train/recognition/whisper-finetune-ko/LOG.md) | 🛠 실습 | 🌱 planned | – | 2026-07-20 |
+| train | recognition | [whisper-finetune-ko](train/recognition/whisper-finetune-ko/LOG.md) | 🛠 실습 | 🚧 wip | work | 2026-07-20 |
