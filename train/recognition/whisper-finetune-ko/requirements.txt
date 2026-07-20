@@ -5,3 +5,4 @@ evaluate
 jiwer                 # CER/WER 백엔드
 accelerate            # HF Trainer 필수
 soundfile             # FLAC 디코딩
+librosa               # datasets Audio 디코드/리샘플 백엔드 (없으면 로드 시 ImportError)
