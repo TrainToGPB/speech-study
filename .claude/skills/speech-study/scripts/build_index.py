@@ -2,13 +2,14 @@
 """LOG.md 프론트매터를 스캔해 루트 INDEX.md를 재생성한다.
 
 표준 라이브러리만 사용 — 시스템 파이썬으로 실행 가능.
-실험은 항상 <topic>/<name>/LOG.md 두 단계 깊이에 있다고 가정한다.
+실험은 항상 <section>/<topic>/<name>/LOG.md 세 단계 깊이에 있다고 가정한다.
+section=최상위(study/train 등), topic=그 하위, name=실험 폴더.
 """
 import subprocess
 import sys
 from pathlib import Path
 
-# 실험 폴더가 아닌 최상위 디렉토리
+# 실험 섹션이 아닌 최상위 디렉토리
 IGNORE_TOPLEVEL = {".git", ".claude", ".omc", "docs", "shared", ".github", "outputs"}
 
 STATUS_EMOJI = {
@@ -66,28 +67,37 @@ def parse_frontmatter(text: str) -> dict:
     return data
 
 
+def _kind(section: str, fm: dict) -> str:
+    if section == "train":
+        return "🛠 실습"
+    return "💡 아이디어" if "idea" in fm else "📄 논문"
+
+
 def collect(root: Path) -> list[dict]:
     rows = []
-    for topic_dir in sorted(p for p in root.iterdir() if p.is_dir()):
-        if topic_dir.name in IGNORE_TOPLEVEL or topic_dir.name.startswith("."):
+    for section_dir in sorted(p for p in root.iterdir() if p.is_dir()):
+        if section_dir.name in IGNORE_TOPLEVEL or section_dir.name.startswith("."):
             continue
-        for exp_dir in sorted(p for p in topic_dir.iterdir() if p.is_dir()):
-            log = exp_dir / "LOG.md"
-            if not log.exists():
-                continue
-            fm = parse_frontmatter(log.read_text(encoding="utf-8"))
-            kind = "💡 아이디어" if "idea" in fm else "📄 논문"
-            rows.append(
-                {
-                    "topic": fm.get("topic", topic_dir.name),
-                    "name": exp_dir.name,
-                    "rel": log.relative_to(root).as_posix(),
-                    "kind": kind,
-                    "status": STATUS_EMOJI.get(str(fm.get("status", "planned")), fm.get("status", "")),
-                    "env": ", ".join(fm.get("env_tested", []) or []) or "–",
-                    "updated": fm.get("updated", ""),
-                }
-            )
+        for topic_dir in sorted(p for p in section_dir.iterdir() if p.is_dir()):
+            for exp_dir in sorted(p for p in topic_dir.iterdir() if p.is_dir()):
+                log = exp_dir / "LOG.md"
+                if not log.exists():
+                    continue
+                fm = parse_frontmatter(log.read_text(encoding="utf-8"))
+                rows.append(
+                    {
+                        "section": section_dir.name,
+                        "topic": fm.get("topic", topic_dir.name),
+                        "name": exp_dir.name,
+                        "rel": log.relative_to(root).as_posix(),
+                        "kind": _kind(section_dir.name, fm),
+                        "status": STATUS_EMOJI.get(
+                            str(fm.get("status", "planned")), fm.get("status", "")
+                        ),
+                        "env": ", ".join(fm.get("env_tested", []) or []) or "–",
+                        "updated": fm.get("updated", ""),
+                    }
+                )
     return rows
 
 
@@ -100,16 +110,16 @@ def render(rows: list[dict]) -> str:
         "",
         f"총 {len(rows)}개 실험.",
         "",
-        "| 주제 | 실험 | 유형 | 상태 | 검증환경 | 갱신일 |",
-        "|------|------|------|------|----------|--------|",
+        "| 구분 | 주제 | 실험 | 유형 | 상태 | 검증환경 | 갱신일 |",
+        "|------|------|------|------|------|----------|--------|",
     ]
-    for r in sorted(rows, key=lambda x: (x["topic"], x["name"])):
+    for r in sorted(rows, key=lambda x: (x["section"], x["topic"], x["name"])):
         lines.append(
-            f"| {r['topic']} | [{r['name']}]({r['rel']}) | {r['kind']} | "
+            f"| {r['section']} | {r['topic']} | [{r['name']}]({r['rel']}) | {r['kind']} | "
             f"{r['status']} | {r['env']} | {r['updated']} |"
         )
     if not rows:
-        lines.append("| _아직 없음_ | | | | | |")
+        lines.append("| _아직 없음_ | | | | | | |")
     lines.append("")
     return "\n".join(lines)
 
